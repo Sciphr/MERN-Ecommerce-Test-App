@@ -14,31 +14,20 @@ import Message from '../Components/Message';
 import { addToCart, removeFromCart } from '../Actions/cartActions';
 
 const CartScreen = () => {
-  // const params = useParams();
-  // const location = useLocation();
-  const navigate = useNavigate();
 
-  //Potential removal
-  // const productId = params.id;
-  // const qty = location.search ? Number(location.search.split('=')[1]) : 1;
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { cartItems } = cart;
 
-  //Potential removal
-  // useEffect(() => {
-  //   if (productId) {
-  //     dispatch(addToCart(productId, qty));
-  //   }
-  // }, [dispatch, productId, qty]);
 
   const removeFromCartHandler = (id) => {
     dispatch(removeFromCart(id));
   };
 
   const checkoutHandler = () => {
-    navigate('/login?redirect=shipping');
+    navigate('/login?redirect=/shipping');
   };
 
   return (

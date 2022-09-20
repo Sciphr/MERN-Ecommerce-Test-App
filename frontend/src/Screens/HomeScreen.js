@@ -11,6 +11,7 @@ const HomeScreen = () => {
 
   const productList = useSelector((state) => state.productList);
   const { loading, error, products } = productList;
+  // dispatch({ type: USER_UPDATE_PROFILE_RESET });
 
   useEffect(() => {
     dispatch(listProducts());
@@ -25,11 +26,17 @@ const HomeScreen = () => {
         <Message variant="danger">{error}</Message>
       ) : (
         <Row>
-          {products.map((product) => (
-            <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
-              <Product product={product} />
-            </Col>
-          ))}
+          {products.map((product) => {
+            if (!product.isDeleted) {
+              return (
+                <Col key={product._id} sm={12} md={6} lg={4} xl={3}>
+                  <Product product={product} />
+                </Col>
+              );
+            } else {
+              return null;
+            }
+          })}
         </Row>
       )}
     </React.Fragment>

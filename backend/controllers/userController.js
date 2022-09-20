@@ -91,4 +91,118 @@ const getUserProfile = async (req, res, next) => {
   }
 };
 
-export { authUser, getUserProfile, registerUser };
+//@desc Update user profile
+//@route PUT /api/users/profile
+//@access Private
+const updateUserProfile = async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+
+  const emailExists = await User.findOne({ email: req.body.email });
+
+  //This is if another user has the same email, not including the current user since the error message wouldn't make as much sense if you simply overrote your email with the same email
+  if (emailExists && emailExists._id.toString() !== req.user._id.toString()) {
+    res.status(400);
+    const error = new Error('User already exists :(');
+    return next(error);
+  }
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+      token: generateToken(updatedUser._id),
+    });
+  } else {
+    res.status(404);
+    const error = new Error('Update Failed');
+    return next(error);
+  }
+};
+
+//@desc GET all users
+//@route GET /api/users
+//@access Private/Admin
+const getUsers = async (req, res, next) => {
+  const users = await User.find({});
+
+  res.json(users);
+};
+
+//@desc DELETE user
+//@route DELETE /api/users/:id
+//@access Private/Admin
+const deleteUser = async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    await user.remove();
+    res.json({ message: 'User removed' });
+  } else {
+    res.status(404);
+    const error = new Error('User not found');
+    return next(error);
+  }
+};
+
+//@desc GET user by ID
+//@route GET /api/users/:id
+//@access Private/Admin
+const getUserById = async (req, res, next) => {
+  const user = await User.findById(req.params.id).select('-password');
+
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404);
+    const error = new Error('User not found');
+    return next(error);
+  }
+};
+
+//@desc Update user
+//@route PUT /api/users/:id
+//@access Private/Admin
+const updateUser = async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+    user.isAdmin = req.body.isAdmin ?? user.isAdmin;
+
+    const updatedUser = await user.save();
+
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      isAdmin: updatedUser.isAdmin,
+    });
+  } else {
+    res.status(404);
+    const error = new Error('Update Failed');
+    return next(error);
+  }
+};
+
+export {
+  authUser,
+  getUserProfile,
+  registerUser,
+  updateUserProfile,
+  getUsers,
+  deleteUser,
+  getUserById,
+  updateUser,
+};
