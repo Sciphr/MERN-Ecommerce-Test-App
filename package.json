@@ -2,9 +2,6 @@
   "name": "udemy-mern-ecommerce",
   "version": "1.0.0",
   "description": "MERN shopping cart app",
-  "engines": {
-    "node": "18.x"
-  },
   "main": "server.js",
   "type": "module",
   "scripts": {
