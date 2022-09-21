@@ -21,7 +21,7 @@ const getProducts = async (req, res, next) => {
   // const deleted = await Product.countDocuments({ isDeleted: true });
   // const finalCount = count - deleted;
 
-  const products = await Product.find({ ...keyword })
+  const products = await Product.find({ ...keyword, isDeleted: false })
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
